@@ -1,16 +1,29 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
 
-// Import local images
-import organicTomatoes from '/public/images/products/organic-tomatoes.jpg';
-import teff from '/public/images/products/teff.jpg';
-import sweetPeppers from '/public/images/products/sweet-peppers.jpg';
-import organicCarrots from '/public/images/products/organic-carrots.jpg';
-import greenBeans from '/public/images/products/green-beans.jpg';
-import coffee from '/public/images/products/coffee.jpg';
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+  category: string;
+  farmerId: number;
+  imageUrl: string;
+}
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => setProducts(data));
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
@@ -26,40 +39,40 @@ export default function ProductsPage() {
       </header>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-8">Fresh Products</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            { name: 'Organic Tomatoes', farmer: 'Ahmed Hassan', location: 'Addis Ababa', price: '120 ETB/kg', image: '/images/products/organic-tomatoes.jpg' },
-            { name: 'Teff', farmer: 'Fatima Ali', location: 'Jimma', price: '80 ETB/kg', image: '/images/products/teff.jpg' },
-            { name: 'Sweet Peppers', farmer: 'Dawit Tadesse', location: 'Bahir Dar', price: '200 ETB/kg', image: '/images/products/sweet-peppers.jpg' },
-            { name: 'Organic Carrots', farmer: 'Meron Bekele', location: 'Hawassa', price: '90 ETB/kg', image: '/images/products/organic-carrots.jpg' },
-            { name: 'Green Beans', farmer: 'Yosef Negash', location: 'Mekelle', price: '150 ETB/kg', image: '/images/products/green-beans.jpg' },
-            { name: 'Coffee', farmer: 'Hanan Mohammed', location: 'Sidama', price: '60 ETB/kg', image: '/images/products/coffee.jpg' },
-          ].map((product, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow overflow-hidden">
-              <div className="aspect-w-16 aspect-h-12">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <CardHeader>
-                <CardTitle className="text-lg">{product.name}</CardTitle>
-                <CardDescription>
-                  by {product.farmer} • {product.location}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <p className="text-2xl font-bold text-green-600">{product.price}</p>
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                    Contact Farmer
-                  </Button>
+        {products.length === 0 ? (
+          <div className="text-center text-gray-500 text-lg py-16">No products found.</div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <Card key={product.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                <div className="aspect-w-16 aspect-h-12">
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                <CardHeader>
+                  <CardTitle className="text-lg">{product.name}</CardTitle>
+                  <CardDescription>
+                    {product.description}
+                  </CardDescription>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Category: {product.category} • Quantity: {product.quantity}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center">
+                    <p className="text-2xl font-bold text-green-600">{product.price} ETB</p>
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      Contact Farmer
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
