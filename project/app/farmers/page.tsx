@@ -11,7 +11,6 @@ export default function FarmersPage() {
             <div className="flex items-center space-x-2">
               <span className="h-8 w-8 inline-block bg-green-600 rounded-full mr-2" />
               <h1 className="text-2xl font-bold text-gray-900">EthioAgri</h1>
-              
               <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Customer</span>
             </div>
           </div>
